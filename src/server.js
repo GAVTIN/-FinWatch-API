@@ -4,7 +4,7 @@ const app = require('./app');
 const config = require('./config/env');
 
 const server = app.listen(config.port, () =>
-    console.log(`FinWatch running on port ${config.port} [${config.nodeEnv}]`)
+    console.log(`Worker ${process.pid} started on port ${config.port} [${config.nodeEnv}]`)
 );
 
 const shutdown = (signal) => {
@@ -14,3 +14,6 @@ const shutdown = (signal) => {
         process.exit(0);
     });
 };
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
