@@ -1,3 +1,5 @@
+const { Transform } = require('stream');
+
 class CsvTransform extends Transform {
     constructor(options = {}) {
         super({ ...options, objectMode: true });  // input: objects, output: strings

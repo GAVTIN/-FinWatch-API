@@ -4,30 +4,37 @@ const app = require('./app');
 const config = require('./config/env');
 const connectDB = require('./config/database');
 const monitorEventLoop = require('./utils/eventLoopMonitor');
+const http = require('http');
+const { initSocket } = require('./config/socket');
+const { checkAlerts } = require('./services/alertChecker');
 
-if (config.nodeEnv === 'development') monitorEventLoop(50);
+// Create HTTP server manually — Socket.io needs the raw http.Server
+const httpServer = http.createServer(app);
+initSocket(httpServer);
 
-connectDB();
+// Poll for alert conditions every 60 seconds
+const alertInterval = setInterval(checkAlerts, 60 * 1000);
 
-const server = app.listen(config.port, () =>
+const server = httpServer.listen(config.port, () =>
     console.log(`Worker ${process.pid} started on port ${config.port} [${config.nodeEnv}]`)
 );
 
-// ← ADD THIS RIGHT HERE, immediately after app.listen
+if (config.nodeEnv === 'development') monitorEventLoop(50);
+connectDB();
+
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-        console.error(`Port ${config.port} is already in use. Is PM2 running? Run: pm2 kill`);
+        console.error(`Port ${config.port} already in use. Run: pm2 kill`);
         process.exit(1);
-    } else {
-        throw err;
-    }
+    } else throw err;
 });
 
 const shutdown = (signal) => {
-    console.log(`${signal} received — shutting down gracefully`);
+    console.log(`${signal} — shutting down`);
+    clearInterval(alertInterval);
     server.close(async () => {
         await require('mongoose').connection.close();
-        console.log('HTTP server and MongoDB closed');
+        logger.info('Server and MongoDB closed');
         process.exit(0);
     });
 };
