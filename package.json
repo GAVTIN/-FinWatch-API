@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "debug": "node --inspect src/server.js"
+    "debug": "node --inspect src/server.js",
+    "test":     "jest --forceExit",
+    "test:cov": "jest --coverage --forceExit",
+    "test:watch":"jest --watch"
   },
   "keywords": [],
   "author": "Gaurav Sinha",
@@ -20,6 +23,10 @@
     "mongoose": "^9.6.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
+    "@jest/globals": "^30.4.1",
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.1.0",
+    "nodemon": "^3.0.0",
+    "supertest": "^7.2.2"
   }
 }
