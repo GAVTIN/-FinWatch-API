@@ -1,8 +1,17 @@
 const loadConfig = () => {
-    const required = ['PORT', 'NODE_ENV'];
+    const required = ['PORT', 'NODE_ENV', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
+    // In production, MongoDB and Redis must be explicitly configured
+    if (process.env.NODE_ENV === 'production') {
+        required.push('MONGO_URI', 'ALLOWED_ORIGINS');
+    }
     required.forEach(key => {
         if (!process.env[key]) throw new Error(`Missing env var: ${key}`);
     });
+    // Warn if weak secrets are used in production
+    if (process.env.NODE_ENV === 'production') {
+        if (process.env.JWT_SECRET?.length < 32)
+            throw new Error('JWT_SECRET must be at least 32 characters in production');
+    }
     return Object.freeze({
         port: parseInt(process.env.PORT, 10) || 3000,
         nodeEnv: process.env.NODE_ENV,

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "Real-time financial portfolio tracker and alert engine",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "debug": "node --inspect src/server.js",
-    "test": "jest --forceExit",
-    "test:cov": "jest --coverage --forceExit",
-    "test:watch": "jest --watch"
+    "start":      "node src/server.js",
+    "dev":        "nodemon src/server.js",
+    "test":       "jest --forceExit",
+    "test:cov":   "jest --coverage --forceExit"
   },
   "keywords": [],
   "author": "Gaurav Sinha",
