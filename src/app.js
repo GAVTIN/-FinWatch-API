@@ -54,6 +54,13 @@ app.use('/api/alerts', alertRoutes);
 // 5. Error handler — must be last
 app.use(errorHandler);
 
+if (process.env.NODE_ENV !== 'production') {
+    const swaggerUi = require('swagger-ui-express');
+    const swaggerSpec = require('./config/swagger');
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    console.log('Swagger UI: http://localhost:3000/api-docs');
+}
+
 module.exports = app;
 
 // The exact order of middleware is important for security, logging and error handling to work correctly. The general flow is:
