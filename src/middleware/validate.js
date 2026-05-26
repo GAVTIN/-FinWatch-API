@@ -4,16 +4,18 @@ const AppError = require('../utils/AppError');
 // Middleware factory: validate(schema) returns Express middleware
 const validate = (schema) => (req, res, next) => {
     try {
-        // parse() throws ZodError if validation fails
-        // it also strips unknown fields — prevents mass assignment
         req.body = schema.parse(req.body);
         next();
     } catch (err) {
-        if (err instanceof ZodError) {
-            const messages = err.errors.map(e => `${e.path.join('.')}: ${e.message}`);
-            return next(new AppError(messages.join(', '), 400));
+        // use err.issues — works across all Zod versions
+        if (err?.issues || err?.name === 'ZodError') {
+            const messages = (err.issues || err.errors || [])
+                .map(e => `${e.path.join('.') || 'field'}: ${e.message}`)
+                .join(', ');
+            return next(new AppError(messages || 'Validation failed', 400));
         }
         next(err);
     }
 };
+
 module.exports = validate;

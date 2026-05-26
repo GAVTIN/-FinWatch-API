@@ -1,13 +1,13 @@
 module.exports = {
     testEnvironment: 'node',
     testMatch: ['**/tests/**/*.test.js'],
-    setupFilesAfterFramework: ['./tests/setup/testSetup.js'],
+    setupFilesAfterEnv: ['./tests/setup/testSetup.js'],  // was: setupFilesAfterFramework
     collectCoverageFrom: [
         'src/**/*.js',
-        '!src/server.js',     // entry point — not unit testable
-        '!src/config/**',     // config files — not business logic
+        '!src/server.js',
+        '!src/config/**',
     ],
-    coverageThresholds: {
+    coverageThreshold: {                                  // was: coverageThresholds (no 's')
         global: {
             branches: 80,
             functions: 80,
@@ -15,5 +15,5 @@ module.exports = {
             statements: 80,
         },
     },
-    testTimeout: 30000,     // 30s — mongodb-memory-server needs time to start
+    testTimeout: 30000,
 };

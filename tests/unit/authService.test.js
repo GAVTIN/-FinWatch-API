@@ -33,7 +33,7 @@ describe('AuthService — register', () => {
         await authService.register(validUser);
         const stored = await User.findOne({ email: validUser.email }).select('+password');
         expect(stored.password).not.toBe(validUser.password);  // not plain text
-        expect(stored.password).toMatch(/^$2b$/);            // bcrypt prefix
+        expect(stored.password).toMatch(/^\$2b\$/);            // bcrypt prefix
     });
 });
 

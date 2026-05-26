@@ -9,6 +9,7 @@ const loadConfig = () => {
         mongoUri: process.env.MONGO_URI || '',
         jwtExpiresIn: process.env.JWT_EXPIRES_IN || '15m',
         jwtSecret: process.env.JWT_SECRET || 'your_jwt_secret',
+        jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'your_jwt_refresh_secret',
         jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
         redisHost: process.env.REDIS_HOST || 'localhost',
         redisPort: process.env.REDIS_PORT || 6379,

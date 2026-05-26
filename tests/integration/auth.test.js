@@ -13,7 +13,7 @@ describe('POST /api/auth/register', () => {
     });
 
     it('returns 409 on duplicate email', async () => {
-        const user = { name: 'A', email: 'dup@test.com', password: 'Password123' };
+        const user = { name: 'Test User', email: 'dup@test.com', password: 'Password123' };
         await request(app).post('/api/auth/register').send(user);
         const res = await request(app).post('/api/auth/register').send(user);
         expect(res.status).toBe(409);
@@ -23,7 +23,7 @@ describe('POST /api/auth/register', () => {
 describe('POST /api/auth/login', () => {
     beforeEach(async () => {
         await request(app).post('/api/auth/register')
-            .send({ name: 'G', email: 'g@test.com', password: 'Password123' });
+            .send({ name: 'Gaurav Singh', email: 'g@test.com', password: 'Password123' });
     });
 
     it('returns 200 and access token on valid credentials', async () => {

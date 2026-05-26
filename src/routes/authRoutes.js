@@ -8,7 +8,5 @@ router.post('/register', authLimiter, validate(registerSchema), register);
 router.post('/login', authLimiter, validate(loginSchema), login);
 router.post('/refresh', refreshToken);
 router.post('/logout', logoutUser);
-router.post('/register', register);
-router.post('/login', login);
 
 module.exports = router;
