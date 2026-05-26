@@ -3,6 +3,7 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const getPrice = asyncHandler(async (req, res) => {
     const data = await priceService.fetchPrice(req.params.symbol.toUpperCase());
+    res.set('X-Cache', data.cacheHit ? 'HIT' : 'MISS');
     res.json({ status: 'success', data });
 });
 

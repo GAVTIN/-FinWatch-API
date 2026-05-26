@@ -1,6 +1,8 @@
 const https = require('https');
 const retryWithBackoff = require('../utils/retryWithBackoff');
 const AppError = require('../utils/AppError');
+const cache = require('../utils/cache');
+const PRICE_TTL = 60;   // cache prices for 60 seconds
 
 // Low level fetch wrapper for Alpha Vantage API
 const fetchJson = (url) => new Promise((resolve, reject) => {
@@ -29,18 +31,30 @@ const KEY = process.env.ALPHA_VANTAGE_KEY;
 
 // Fetch single symbol price with retries
 const fetchPrice = async (symbol) => {
-    const url = `${BASE}?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(symbol)}&apikey=${KEY}`;
+    const cacheKey = `price:${symbol}`;
+
+    // 1. Check cache first
+    const cached = await cache.get(cacheKey);
+    if (cached) return { ...cached, cacheHit: true };
+
+    // 2. Cache miss — fetch from API
+    const url = `${BASE}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${KEY}`;
     const data = await retryWithBackoff(() => fetchJson(url));
     const quote = data['Global Quote'];
-    if (!quote || !quote['05. price']) {
-        throw new AppError(`Price data not found for symbol: ${symbol}`, 404);
-    }
-    return {
+    if (!quote || !quote['05. price'])
+        throw new AppError(`No price data for ${symbol}`, 404);
+
+    const result = {
         symbol: quote['01. symbol'],
         price: parseFloat(quote['05. price']),
-        change: parseFloat(quote['09. change']),
-        fetchedAt: new Date().toISOString()
+        change: parseFloat(quote['09. % change']),
+        fetchedAt: new Date().toISOString(),
+        cacheHit: false,
     };
+
+    // 3. Populate cache for next caller
+    await cache.set(cacheKey, result, PRICE_TTL);
+    return result;
 };
 
 //fetch multiple symbols in parallel with retries
