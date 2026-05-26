@@ -4,7 +4,16 @@ const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
 const priceRoutes = require('./routes/priceRoutes');
 const alertRoutes = require('./routes/alertRoutes');
+const helmet = require('helmet');
+const cors = require('cors');
 
+app.use(helmet());   // sets 11 security headers in one line
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [],
+    credentials: true,            // needed for cookies (refresh token)
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use('/api/prices', priceRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use(cookieParser());
