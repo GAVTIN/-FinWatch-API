@@ -6,7 +6,16 @@ const priceRoutes = require('./routes/priceRoutes');
 const alertRoutes = require('./routes/alertRoutes');
 const helmet = require('helmet');
 const cors = require('cors');
+const compression = require('compression');
+const requestLogger = require('./middleware/requestLogger');
 
+app.use(compression());          // gzip all responses > 1kb
+app.use(requestLogger);
+app.use((req, res, next) => {    // X-Response-Time header
+    const start = Date.now();
+    res.on('finish', () => res.set('X-Response-Time', `${Date.now() - start}ms`));
+    next();
+});
 app.use(helmet());   // sets 11 security headers in one line
 app.use(cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [],
